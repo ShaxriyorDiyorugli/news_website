@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ news.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Bosh sahifa</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'category-news' category.id %}">{{ category.title }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ news.title|truncatewords:5 }}</li>
+                </ol>
+            </nav>
+
+            <article class="card shadow-sm">
+                {% if news.images %}
+                <img src="{{ news.images.url }}" class="card-img-top" alt="{{ news.title }}">
+                {% endif %}
+
+                <div class="card-body">
+                    <h1 class="card-title mb-3">{{ news.title }}</h1>
+
+                    <div class="mb-3 text-muted">
+                        <i class="fas fa-calendar-alt"></i> {{ news.created_at|date:"d.m.Y H:i" }} |
+                        <i class="fas fa-eye"></i> {{ news.view_count }} marta ko'rilgan |
+                        <i class="fas fa-folder"></i> {{ category.title }}
+                        {% if news.region %}
+                        | <i class="fas fa-map-marker-alt"></i> {{ news.region.title }}
+                        {% endif %}
+                    </div>
+
+                    <div class="news-content">
+                        <p class="lead">{{ news.summary }}</p>
+                        <hr>
+                        <div class="mt-4">
+                            {{ news.content|linebreaks }}
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Share Buttons -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5>Ulashish:</h5>
+                    <button class="btn btn-primary" onclick="shareOnFacebook()">
+                        <i class="fab fa-facebook"></i> Facebook
+                    </button>
+                    <button class="btn btn-info" onclick="shareOnTelegram()">
+                        <i class="fab fa-telegram"></i> Telegram
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Related News -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-link"></i> O'xshash yangiliklar</h5>
+                </div>
+                <div class="card-body">
+                    {% for related in rel_news %}
+                    <div class="mb-3 pb-3 border-bottom">
+                        <a href="{% url 'detail' related.id %}" class="text-decoration-none">
+                            <h6>{{ related.title|truncatewords:8 }}</h6>
+                        </a>
+                        <small class="text-muted">
+                            <i class="fas fa-calendar"></i> {{ related.created_at|date:"d.m.Y" }}
+                        </small>
+                    </div>
+                    {% empty %}
+                    <p>O'xshash yangiliklar mavjud emas</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Categories Widget -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-tags"></i> Kategoriyalar</h5>
+                </div>
+                <div class="card-body">
+                    {% for cat in news.category.all %}
+                    <a href="{% url 'category-news' cat.id %}" class="btn btn-outline-primary btn-sm m-1">
+                        {{ cat.title }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function shareOnFacebook() {
+    window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(window.location.href), '_blank');
+}
+
+function shareOnTelegram() {
+    window.open('https://t.me/share/url?url=' + encodeURIComponent(window.location.href) + '&text={{ news.title }}', '_blank');
+}
+</script>
+{% endblock %}
