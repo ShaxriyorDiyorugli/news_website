@@ -9,22 +9,40 @@
     {% if latest_new %}
     <div class="row mb-5">
         <div class="col-12">
-            <div class="card bg-dark text-white border-0 overflow-hidden">
-                {% if latest_new.images %}
-                <img src="{{ latest_new.images }}" class="card-img" alt="{{ latest_new.title }}" style="height: 500px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/1200x500?text=Rasm+topilmadi'">
-                {% else %}
-                <div class="bg-secondary d-flex align-items-center justify-content-center" style="height: 500px;">
-                    <i class="fas fa-newspaper fa-5x text-white"></i>
-                </div>
-                {% endif %}
-                <div class="card-img-overlay d-flex flex-column justify-content-end bg-gradient">
-                    <div class="bg-dark bg-opacity-75 p-4 rounded">
-                        <span class="badge bg-danger mb-2">Eng muhim</span>
-                        <h1 class="card-title display-5">{{ latest_new.title }}</h1>
-                        <p class="card-text">{{ latest_new.summary|default:latest_new.content|truncatewords:30 }}</p>
-                        <a href="{% url 'detail' latest_new.id %}" class="btn btn-primary">
-                            <i class="fas fa-eye"></i> O'qish
-                        </a>
+            <div class="card border-0 shadow-sm overflow-hidden">
+                <div class="row g-0">
+                    <!-- Rasm qismi -->
+                    <div class="col-md-6">
+                        {% if latest_new.images %}
+                        <img src="{{ latest_new.images }}" class="img-fluid w-100" alt="{{ latest_new.title }}" style="height: 450px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/800x450?text=Rasm+topilmadi'">
+                        {% else %}
+                        <div class="bg-secondary d-flex align-items-center justify-content-center" style="height: 450px;">
+                            <i class="fas fa-newspaper fa-5x text-white"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Matn qismi (rasmdan alohida) -->
+                    <div class="col-md-6">
+                        <div class="card-body d-flex flex-column justify-content-center h-100 p-4 p-lg-5">
+                            <div class="mb-3">
+                                <span class="badge bg-danger px-3 py-2">
+                                    <i class="fas fa-bolt"></i> ENG MUHIM
+                                </span>
+                            </div>
+                            <h2 class="card-title h2 fw-bold mb-3">{{ latest_new.title|truncatewords:10 }}</h2>
+                            <p class="card-text text-muted mb-4">
+                                {{ latest_new.summary|default:latest_new.content|striptags|truncatewords:20 }}
+                            </p>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <a href="{% url 'detail' latest_new.id %}" class="btn btn-danger">
+                                    <i class="fas fa-eye"></i> To'liq o'qish
+                                </a>
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar"></i> {{ latest_new.created_at|date:"d.m.Y" }}
+                                </small>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -33,16 +51,16 @@
     {% endif %}
 
     <!-- Categories & Regions Row -->
-    <div class="row mb-4">
+    <div class="row mb-5">
         <div class="col-md-6">
-            <div class="card">
+            <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">
                     <h5 class="mb-0"><i class="fas fa-tags"></i> Kategoriyalar</h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         {% for category in categories %}
-                        <div class="col-md-4 mb-2">
+                        <div class="col-md-4 col-6 mb-2">
                             <a href="{% url 'category-news' category.id %}" class="text-decoration-none">
                                 <i class="fas fa-folder"></i> {{ category.title }}
                             </a>
@@ -55,14 +73,14 @@
             </div>
         </div>
         <div class="col-md-6">
-            <div class="card">
+            <div class="card shadow-sm">
                 <div class="card-header bg-success text-white">
                     <h5 class="mb-0"><i class="fas fa-map-marker-alt"></i> Hududlar</h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         {% for region in regions %}
-                        <div class="col-md-4 mb-2">
+                        <div class="col-md-4 col-6 mb-2">
                             <a href="{% url 'region-news' region.id %}" class="text-decoration-none">
                                 <i class="fas fa-location-dot"></i> {{ region.title }}
                             </a>
@@ -79,9 +97,14 @@
     <!-- Other News -->
     <div class="row">
         <div class="col-12">
-            <h2 class="mb-4 pb-2 border-bottom">
-                <i class="fas fa-clock"></i> So'nggi yangiliklar
-            </h2>
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                <h2 class="mb-0">
+                    <i class="fas fa-clock text-primary"></i> So'nggi yangiliklar
+                </h2>
+                <a href="{% url 'all-news' %}" class="btn btn-outline-primary btn-sm">
+                    Barchasi <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
         </div>
 
         {% for news_item in other_news %}
@@ -101,23 +124,27 @@
                         <span class="badge bg-info">{{ news_item.region.title }}</span>
                         {% endif %}
                     </div>
-                    <h5 class="card-title">{{ news_item.title|truncatewords:10 }}</h5>
-                    <p class="card-text text-muted">{{ news_item.summary|default:news_item.content|striptags|truncatewords:20 }}</p>
-                    <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title">{{ news_item.title|truncatewords:8 }}</h5>
+                    <p class="card-text text-muted small">{{ news_item.summary|default:news_item.content|striptags|truncatewords:15 }}</p>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
                         <small class="text-muted">
                             <i class="fas fa-calendar"></i> {{ news_item.created_at|date:"d.m.Y" }}
                         </small>
                         <small class="text-muted">
                             <i class="fas fa-eye"></i> {{ news_item.view_count }}
                         </small>
-                        <a href="{% url 'detail' news_item.id %}" class="btn btn-sm btn-outline-primary">O'qish</a>
+                        <a href="{% url 'detail' news_item.id %}" class="btn btn-sm btn-outline-primary">
+                            O'qish <i class="fas fa-chevron-right"></i>
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
         {% empty %}
         <div class="col-12">
-            <div class="alert alert-info">Hozircha yangiliklar mavjud emas</div>
+            <div class="alert alert-info text-center">
+                <i class="fas fa-info-circle"></i> Hozircha yangiliklar mavjud emas
+            </div>
         </div>
         {% endfor %}
     </div>
