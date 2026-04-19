@@ -1,10 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView
 from .models import Category, Region, News
 
 def home(request):
-    latest_new = News.objects.filter().order_by('-id')[0:1]
-    other_news = News.objects.filter().order_by('-id')[1:12]
+    latest_new = News.objects.filter(is_published=True).order_by('-id').first()
+    other_news = News.objects.filter(is_published=True).order_by('-id')[1:12]
     categories = Category.objects.all()
     regions = Region.objects.all()
 
@@ -14,41 +14,46 @@ def home(request):
         'categories': categories,
         'regions': regions
     }
-
     return render(request, 'home.html', context)
 
-def detail(request):
-    news = News.objects.get(id=id)
-    category = Category.objects.get(id=news.category.id)
-    rel_news = News.objects.filter(category=category).exclude(id=id)
+def detail(request, id):
+    news = get_object_or_404(News, id=id, is_published=True)
+    news.view_count += 1
+    news.save()
+
+    category = news.category
+    rel_news = News.objects.filter(category=category, is_published=True).exclude(id=id)[:5]
 
     context = {
         'news': news,
         'category': category,
         'rel_news': rel_news
     }
-
     return render(request, 'detail.html', context)
 
 class AllViews(ListView):
     model = News
     template_name = 'all-news.html'
+    context_object_name = 'news_list'
+    paginate_by = 12
 
-def category_detail(request):
-    category = Category.objects.get(id=id)
-    news = News.objects.filter(category=category)
+    def get_queryset(self):
+        return News.objects.filter(is_published=True).order_by('-created_at')
 
-    return render(request, 'category-news.html',{
+def category_detail(request, id):
+    category = get_object_or_404(Category, id=id)
+    news = News.objects.filter(category=category, is_published=True).order_by('-created_at')
+
+    return render(request, 'category-news.html', {
         'category': category,
         'news': news
     })
 
-def region_detail(request):
-    region = Region.objects.get(id=id)
-    news = News.objects.filter(region=region)
+def region_detail(request, id):
+    region = get_object_or_404(Region, id=id)
+    news = News.objects.filter(region=region, is_published=True).order_by('-created_at')
 
-    return render(request, 'region-news.html',{
+    return render(request, 'region-news.html', {
         'region': region,
         'news': news
     })
-
