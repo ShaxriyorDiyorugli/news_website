@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ region.title }} yangiliklari{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4 pb-2 border-bottom">
+                <i class="fas fa-map-marker-alt"></i> {{ region.title }} yangiliklari
+            </h1>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for news in news %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm news-card">
+                {% if news.images %}
+                <img src="{{ news.images.url }}" class="card-img-top" alt="{{ news.title }}" style="height: 200px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body">
+                    <div class="mb-2">
+                        <span class="badge bg-primary">{{ news.category.title }}</span>
+                    </div>
+                    <h5 class="card-title">{{ news.title|truncatewords:10 }}</h5>
+                    <p class="card-text text-muted">{{ news.summary|default:news.content|truncatewords:20 }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar"></i> {{ news.created_at|date:"d.m.Y" }}
+                        </small>
+                        <small class="text-muted">
+                            <i class="fas fa-eye"></i> {{ news.view_count }}
+                        </small>
+                        <a href="{% url 'detail' news.id %}" class="btn btn-sm btn-outline-primary">O'qish</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">Bu hududda hozircha yangiliklar mavjud emas</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
