@@ -7,18 +7,23 @@
 <div class="container py-4">
     <!-- Breaking News -->
     {% if latest_new %}
+    {% with first_news=latest_new|first %}
     <div class="row mb-5">
         <div class="col-12">
             <div class="card bg-dark text-white border-0 overflow-hidden">
-                {% if latest_new.0.images %}
-                <img src="{{ latest_new.0.images.url }}" class="card-img" alt="{{ latest_new.0.title }}" style="height: 500px; object-fit: cover;">
+                {% if first_news.images %}
+                <img src="{{ first_news.images }}" class="card-img" alt="{{ first_news.title }}" style="height: 500px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/1200x500?text=No+Image'">
+                {% else %}
+                <div class="bg-secondary d-flex align-items-center justify-content-center" style="height: 500px;">
+                    <i class="fas fa-newspaper fa-5x text-white"></i>
+                </div>
                 {% endif %}
                 <div class="card-img-overlay d-flex flex-column justify-content-end bg-gradient">
                     <div class="bg-dark bg-opacity-75 p-4 rounded">
                         <span class="badge bg-danger mb-2">Eng muhim</span>
-                        <h1 class="card-title display-5">{{ latest_new.0.title }}</h1>
-                        <p class="card-text">{{ latest_new.0.summary|default:latest_new.0.content|truncatewords:30 }}</p>
-                        <a href="{% url 'detail' latest_new.0.id %}" class="btn btn-primary">
+                        <h1 class="card-title display-5">{{ first_news.title }}</h1>
+                        <p class="card-text">{{ first_news.summary|default:first_news.content|truncatewords:30 }}</p>
+                        <a href="{% url 'detail' first_news.id %}" class="btn btn-primary">
                             <i class="fas fa-eye"></i> O'qish
                         </a>
                     </div>
@@ -26,6 +31,7 @@
             </div>
         </div>
     </div>
+    {% endwith %}
     {% endif %}
 
     <!-- Categories & Regions Row -->
@@ -44,7 +50,7 @@
                             </a>
                         </div>
                         {% empty %}
-                        <p>Hech qanday kategoriya mavjud emas</p>
+                        <p class="text-muted">Hech qanday kategoriya mavjud emas</p>
                         {% endfor %}
                     </div>
                 </div>
@@ -64,7 +70,7 @@
                             </a>
                         </div>
                         {% empty %}
-                        <p>Hech qanday hudud mavjud emas</p>
+                        <p class="text-muted">Hech qanday hudud mavjud emas</p>
                         {% endfor %}
                     </div>
                 </div>
@@ -80,29 +86,33 @@
             </h2>
         </div>
 
-        {% for news in other_news %}
+        {% for news_item in other_news %}
         <div class="col-md-6 col-lg-4 mb-4">
             <div class="card h-100 shadow-sm news-card">
-                {% if news.images %}
-                <img src="{{ news.images.url }}" class="card-img-top" alt="{{ news.title }}" style="height: 200px; object-fit: cover;">
+                {% if news_item.images %}
+                <img src="{{ news_item.images }}" class="card-img-top" alt="{{ news_item.title }}" style="height: 200px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/400x200?text=Rasm+topilmadi'">
+                {% else %}
+                <div class="bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                    <i class="fas fa-newspaper fa-3x text-white"></i>
+                </div>
                 {% endif %}
                 <div class="card-body">
                     <div class="mb-2">
-                        <span class="badge bg-primary">{{ news.category.title }}</span>
-                        {% if news.region %}
-                        <span class="badge bg-info">{{ news.region.title }}</span>
+                        <span class="badge bg-primary">{{ news_item.category.title }}</span>
+                        {% if news_item.region %}
+                        <span class="badge bg-info">{{ news_item.region.title }}</span>
                         {% endif %}
                     </div>
-                    <h5 class="card-title">{{ news.title|truncatewords:10 }}</h5>
-                    <p class="card-text text-muted">{{ news.summary|default:news.content|truncatewords:20 }}</p>
+                    <h5 class="card-title">{{ news_item.title|truncatewords:10 }}</h5>
+                    <p class="card-text text-muted">{{ news_item.summary|default:news_item.content|striptags|truncatewords:20 }}</p>
                     <div class="d-flex justify-content-between align-items-center">
                         <small class="text-muted">
-                            <i class="fas fa-calendar"></i> {{ news.created_at|date:"d.m.Y" }}
+                            <i class="fas fa-calendar"></i> {{ news_item.created_at|date:"d.m.Y" }}
                         </small>
                         <small class="text-muted">
-                            <i class="fas fa-eye"></i> {{ news.view_count }}
+                            <i class="fas fa-eye"></i> {{ news_item.view_count }}
                         </small>
-                        <a href="{% url 'detail' news.id %}" class="btn btn-sm btn-outline-primary">O'qish</a>
+                        <a href="{% url 'detail' news_item.id %}" class="btn btn-sm btn-outline-primary">O'qish</a>
                     </div>
                 </div>
             </div>
