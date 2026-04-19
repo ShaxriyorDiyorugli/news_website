@@ -31,13 +31,13 @@ class Region(models.Model):
 
 class News(models.Model):
     title = models.CharField(
-        max_length= 100,
+        max_length= 200,
         unique=True,
         verbose_name='Name of News'
     )
-    summary = models.CharField(max_length=150, verbose_name='Summary', blank=True, null=True)
+    summary = models.CharField(max_length=400, verbose_name='Summary', blank=True, null=True)
     content = models.TextField(verbose_name='Content')
-    images = models.ImageField(upload_to='images/', verbose_name='IMG')
+    images = models.CharField(max_length=400, verbose_name='Link photo')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created at')
     update_at = models.DateTimeField(auto_now=True, verbose_name='Updated at')
     view_count = models.PositiveIntegerField(default=0, verbose_name='Views')
