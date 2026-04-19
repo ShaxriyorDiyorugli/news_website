@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "True").lower() == "true"
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['https://news-website-1-23ur.onrender.com/']
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
