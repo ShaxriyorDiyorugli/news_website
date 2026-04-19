@@ -35,6 +35,7 @@ class News(models.Model):
         unique=True,
         verbose_name='Name of News'
     )
+    summary = models.CharField(max_length=150, verbose_name='Summary', blank=True, null=True)
     content = models.TextField(verbose_name='Content')
     images = models.ImageField(upload_to='images/', verbose_name='IMG')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created at')
