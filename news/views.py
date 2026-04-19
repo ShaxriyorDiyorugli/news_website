@@ -3,8 +3,9 @@ from django.views.generic import ListView
 from .models import Category, Region, News
 
 def home(request):
-    latest_new = News.objects.filter(is_published=True).order_by('-id').first()
-    other_news = News.objects.filter(is_published=True).order_by('-id')[1:12]
+    all_news = News.objects.filter(is_published=True).order_by('-created_at')
+    latest_new = all_news.first()
+    other_news = all_news[1:13]
     categories = Category.objects.all()
     regions = Region.objects.all()
 
@@ -14,13 +15,13 @@ def home(request):
         'categories': categories,
         'regions': regions
     }
+
     return render(request, 'home.html', context)
 
 def detail(request, id):
     news = get_object_or_404(News, id=id, is_published=True)
     news.view_count += 1
     news.save()
-
     category = news.category
     rel_news = News.objects.filter(category=category, is_published=True).exclude(id=id)[:5]
 
@@ -29,6 +30,7 @@ def detail(request, id):
         'category': category,
         'rel_news': rel_news
     }
+
     return render(request, 'detail.html', context)
 
 class AllViews(ListView):
