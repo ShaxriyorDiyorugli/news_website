@@ -18,7 +18,11 @@
 
             <article class="card shadow-sm">
                 {% if news.images %}
-                <img src="{{ news.images.url }}" class="card-img-top" alt="{{ news.title }}">
+                <img src="{{ news.images }}" class="card-img-top" alt="{{ news.title }}" onerror="this.src='https://via.placeholder.com/800x400?text=Rasm+topilmadi'">
+                {% else %}
+                <div class="bg-secondary d-flex align-items-center justify-content-center" style="height: 400px;">
+                    <i class="fas fa-newspaper fa-5x text-white"></i>
+                </div>
                 {% endif %}
 
                 <div class="card-body">
@@ -34,8 +38,10 @@
                     </div>
 
                     <div class="news-content">
+                        {% if news.summary %}
                         <p class="lead">{{ news.summary }}</p>
                         <hr>
+                        {% endif %}
                         <div class="mt-4">
                             {{ news.content|linebreaks }}
                         </div>
@@ -67,15 +73,28 @@
                 <div class="card-body">
                     {% for related in rel_news %}
                     <div class="mb-3 pb-3 border-bottom">
-                        <a href="{% url 'detail' related.id %}" class="text-decoration-none">
-                            <h6>{{ related.title|truncatewords:8 }}</h6>
-                        </a>
-                        <small class="text-muted">
-                            <i class="fas fa-calendar"></i> {{ related.created_at|date:"d.m.Y" }}
-                        </small>
+                        <div class="row">
+                            <div class="col-4">
+                                {% if related.images %}
+                                <img src="{{ related.images }}" class="img-fluid rounded" alt="{{ related.title }}" style="height: 60px; width: 100%; object-fit: cover;" onerror="this.src='https://via.placeholder.com/100x60?text=No+Image'">
+                                {% else %}
+                                <div class="bg-secondary rounded d-flex align-items-center justify-content-center" style="height: 60px;">
+                                    <i class="fas fa-newspaper text-white"></i>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-8">
+                                <a href="{% url 'detail' related.id %}" class="text-decoration-none">
+                                    <h6 class="mb-1">{{ related.title|truncatewords:8 }}</h6>
+                                </a>
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar"></i> {{ related.created_at|date:"d.m.Y" }}
+                                </small>
+                            </div>
+                        </div>
                     </div>
                     {% empty %}
-                    <p>O'xshash yangiliklar mavjud emas</p>
+                    <p class="text-muted">O'xshash yangiliklar mavjud emas</p>
                     {% endfor %}
                 </div>
             </div>
@@ -86,11 +105,15 @@
                     <h5 class="mb-0"><i class="fas fa-tags"></i> Kategoriyalar</h5>
                 </div>
                 <div class="card-body">
-                    {% for cat in news.category.all %}
-                    <a href="{% url 'category-news' cat.id %}" class="btn btn-outline-primary btn-sm m-1">
-                        {{ cat.title }}
-                    </a>
-                    {% endfor %}
+                    <div class="row">
+                        {% for cat in news.category.all %}
+                        <div class="col-6 mb-2">
+                            <a href="{% url 'category-news' cat.id %}" class="btn btn-outline-primary btn-sm w-100">
+                                {{ cat.title }}
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
@@ -99,11 +122,11 @@
 
 <script>
 function shareOnFacebook() {
-    window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(window.location.href), '_blank');
+    window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(window.location.href), '_blank', 'width=600,height=400');
 }
 
 function shareOnTelegram() {
-    window.open('https://t.me/share/url?url=' + encodeURIComponent(window.location.href) + '&text={{ news.title }}', '_blank');
+    window.open('https://t.me/share/url?url=' + encodeURIComponent(window.location.href) + '&text={{ news.title }}', '_blank', 'width=600,height=400');
 }
 </script>
 {% endblock %}
